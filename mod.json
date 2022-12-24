@@ -1,0 +1,14 @@
+{
+   "Name": "Gazyi.ATMinions",
+   "Description": "Gives AI minions various anti-titan capabilities.",
+   "LoadPriority": 2,
+   "RequiredOnClient": false,
+   "Version": "1.0.0",
+   "ConVars": 
+   [
+      {
+         "Name": "sv_npc_antititan_assign",
+         "DefaultValue": "4" // every 4th NPC will get an anti-titan weapon on spawn.
+      }
+   ]
+}
