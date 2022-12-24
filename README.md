@@ -1,5 +1,5 @@
 # Gazyi.ATMinions
-Northstar mod that gives NPC grunts and spectres anti-titan capabilities.
+Northstar mod that gives NPC grunts and spectres custom weapons and anti-titan capabilities.
 
 Server CVars:
 ```

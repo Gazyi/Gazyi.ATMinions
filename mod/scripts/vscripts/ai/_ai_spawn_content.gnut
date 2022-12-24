@@ -14,8 +14,8 @@ global function FixupTitle
 
 struct
 {
-	array< string > gruntWeapons = [ "mp_weapon_rspn101" ]
-	array< string > spectreWeapons = [ "mp_weapon_hemlok_smg" ]
+	array< string > gruntWeapons = []
+	array< string > spectreWeapons = []
 	array< string > pilotAntiTitanWeapons = [ "mp_weapon_rocket_launcher" ]
 	int 			nextAntiTitanWeaponAutoAssign
 } file
@@ -303,7 +303,7 @@ function CommonNPCOnSpawned( entity npc )
 			//grunt specific
 			npc.SetDoFaceAnimations( true ) //HACK: assumption that militia are the only grunt models with faces ( will need a better thing for R2 )
 
-			if ( IsMultiplayer() )
+			if ( IsMultiplayer() && file.gruntWeapons.len() > 0 && npc.GetAISettingsName() == "npc_soldier" )
 			{
 				ReplaceWeapon( npc, file.gruntWeapons[ RandomInt( file.gruntWeapons.len() ) ], [] )
 			}
@@ -344,7 +344,10 @@ function CommonNPCOnSpawned( entity npc )
 
 			if ( IsMultiplayer() )
 			{
-				ReplaceWeapon( npc, file.spectreWeapons[ RandomInt( file.spectreWeapons.len() ) ], [] )
+				if ( file.spectreWeapons.len() > 0 && npc.GetAISettingsName() == "npc_spectre" )
+				{
+					ReplaceWeapon( npc, file.spectreWeapons[ RandomInt( file.spectreWeapons.len() ) ], [] )
+				}
 				
 				npc.EnableNPCFlag( NPC_CROUCH_COMBAT )
 				//Only enable spectre hacking if the playlist var is enabled
