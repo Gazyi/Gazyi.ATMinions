@@ -303,9 +303,11 @@ function CommonNPCOnSpawned( entity npc )
 			//grunt specific
 			npc.SetDoFaceAnimations( true ) //HACK: assumption that militia are the only grunt models with faces ( will need a better thing for R2 )
 
-			if ( IsMultiplayer() && file.gruntWeapons.len() > 0 && npc.GetAISettingsName() == "npc_soldier" )
+			// Only override regular grunts by default.
+			if ( IsMultiplayer() && npc.GetAISettingsName() == "npc_soldier" )
 			{
-				ReplaceWeapon( npc, file.gruntWeapons[ RandomInt( file.gruntWeapons.len() ) ], [] )
+				if ( file.gruntWeapons.len() > 0 )
+					ReplaceWeapon( npc, file.gruntWeapons[ RandomInt( file.gruntWeapons.len() ) ], [] )
 			}
 
 			bool alreadyGaveASecondary = false;
@@ -344,9 +346,11 @@ function CommonNPCOnSpawned( entity npc )
 
 			if ( IsMultiplayer() )
 			{
-				if ( file.spectreWeapons.len() > 0 && npc.GetAISettingsName() == "npc_spectre" )
+				// Only override regular spectres by default.
+				if ( npc.GetAISettingsName() == "npc_spectre" )
 				{
-					ReplaceWeapon( npc, file.spectreWeapons[ RandomInt( file.spectreWeapons.len() ) ], [] )
+					if ( file.spectreWeapons.len() > 0 )
+						ReplaceWeapon( npc, file.spectreWeapons[ RandomInt( file.spectreWeapons.len() ) ], [] )
 				}
 				
 				npc.EnableNPCFlag( NPC_CROUCH_COMBAT )

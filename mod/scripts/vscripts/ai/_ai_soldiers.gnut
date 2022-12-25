@@ -323,7 +323,7 @@ bool function AssignNPCAppropriateWeaponFromWeapons( entity npc, array<entity> w
 	foreach ( weapon in weapons )
 	{
 		// For now, using HACKS because GetWeaponType() always returns 0
-		bool isAntiTitan = string( weapon.GetWeaponInfoFileKeyField( "menu_category" ) ) == "at"
+		bool isAntiTitan = weapon.GetWeaponInfoFileKeyField( "titanarmor_critical_hit_required" ) == null
 		if ( isAntiTitan == isRocketTarget )
 		{
 			// found a weapon to use
@@ -363,7 +363,7 @@ void function OnEnemyChanged_TryHeavyArmorWeapon( entity npc )
 
 	// For now, using HACKS because GetWeaponType() always returns 0
 	//bool isActiveWeapon_AntiTitan = activeWeapon.GetWeaponType() == WT_ANTITITAN
-	bool isActiveWeapon_AntiTitan = string( activeWeapon.GetWeaponInfoFileKeyField( "menu_category" ) ) == "at"
+	bool isActiveWeapon_AntiTitan = activeWeapon.GetWeaponInfoFileKeyField( "titanarmor_critical_hit_required" ) == null
 
 	// already using an appropriate weapon?
 	if ( isActiveWeapon_AntiTitan == isRocketTarget )

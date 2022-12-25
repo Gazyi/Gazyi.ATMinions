@@ -35,9 +35,10 @@ void function GamemodeAITdm_Init()
 	if ( GetCurrentPlaylistVarInt( "aitdm_archer_grunts", 0 ) == 0 )
 	{
 		AiGameModes_SetGruntWeapons( [ "mp_weapon_rspn101", "mp_weapon_dmr", "mp_weapon_r97", "mp_weapon_lmg" ] )
-		AiGameModes_SetSpectreWeapons( [ "mp_weapon_hemlok_smg", "mp_weapon_doubletake", "mp_weapon_mastiff" ] )
+		AiGameModes_SetSpectreWeapons( [ "mp_weapon_hemlok", "mp_weapon_hemlok_smg", "mp_weapon_doubletake", "mp_weapon_mastiff" ] )
 		//AiGameModes_SetAntiTitanWeapons( [ "mp_weapon_rocket_launcher", "mp_weapon_arc_launcher", "mp_weapon_defender", "mp_weapon_mgl" ] )
-		AiGameModes_SetAntiTitanWeapons( [ "mp_weapon_rocket_launcher", "mp_weapon_defender", "mp_weapon_mgl" ] )
+		AiGameModes_SetAntiTitanWeapons( [ "mp_weapon_rocket_launcher", "mp_weapon_defender", "mp_weapon_smr", "mp_weapon_epg" ] )
+		AiGameModes_SetGrenadeWeapons( [ "mp_weapon_frag_grenade", "mp_weapon_grenade_emp", "mp_weapon_grenade_electric_smoke", "mp_weapon_thermite_grenade" ] )
 	}
 	else
 	{
