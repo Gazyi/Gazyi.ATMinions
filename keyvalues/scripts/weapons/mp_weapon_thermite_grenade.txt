@@ -1,0 +1,8 @@
+WeaponData
+{
+	MP_BASE
+	{
+		"npc_explosion_damage" 							"25"
+		"npc_explosion_damage_heavy_armor" 				"45"
+	}
+}

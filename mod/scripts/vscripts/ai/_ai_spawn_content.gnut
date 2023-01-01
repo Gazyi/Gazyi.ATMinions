@@ -2,11 +2,13 @@ untyped
 
 global const PROTOTYPE_DEFAULT_TITAN_RODEO_SLOTS = 3  // Todo: remove and set this in titan_base.set
 
+//------------------------------------------------------
 // Moved from _ai_gamemodes.gnut
 global function AiGameModes_SetGruntWeapons
 global function AiGameModes_SetSpectreWeapons
 global function AiGameModes_SetAntiTitanWeapons
 
+//------------------------------------------------------
 global function CommonNPCOnSpawned
 global function ShouldSpawn
 global function AiSpawnContent_Init
@@ -120,7 +122,11 @@ function CommonNPCOnSpawned( entity npc )
 
 	if ( IsMinion( npc ) )
 	{
-		SetupMinionForRPGs( npc )
+		if ( GetConVarBool( "sv_npc_allow_switch_weapons" ) )
+			SetupMinionForRPGs( npc )
+		else
+			DisableMinionUsesHeavyWeapons( npc )
+
 		CommonMinionInit( npc )
 	}
 	else if ( !npc.IsTitan() )
@@ -304,9 +310,9 @@ function CommonNPCOnSpawned( entity npc )
 			npc.SetDoFaceAnimations( true ) //HACK: assumption that militia are the only grunt models with faces ( will need a better thing for R2 )
 
 			// Only override regular grunts by default.
-			if ( IsMultiplayer() && npc.GetAISettingsName() == "npc_soldier" )
+			if ( IsMultiplayer() && ( npc.GetAISettingsName() == "npc_soldier" || GetConVarBool( "sv_npc_allow_custom_ai_random_weapon" ) ) )
 			{
-				if ( file.gruntWeapons.len() > 0 )
+				if ( file.gruntWeapons.len() > 0 && GetConVarBool( "sv_npc_give_random_primary" ) )
 					ReplaceWeapon( npc, file.gruntWeapons[ RandomInt( file.gruntWeapons.len() ) ], [] )
 			}
 
@@ -325,7 +331,7 @@ function CommonNPCOnSpawned( entity npc )
 			#endif
 			AssignGruntModelForWeaponClass( npc, weapon, weaponSubClass )
 
-			if ( GetCurrentPlaylistVarInt( "aitdm_archer_grunts", 0 ) == 0 && !alreadyGaveASecondary && SP_GetPilotAntiTitanWeapon( npc ) == null )
+			if ( GetConVarBool( "sv_npc_give_antititan" ) && GetCurrentPlaylistVarInt( "aitdm_archer_grunts", 0 ) == 0 && !alreadyGaveASecondary && SP_GetPilotAntiTitanWeapon( npc ) == null )
 				TryAutoAssignAntiTitanWeapon( npc )
 
 			if ( npc.Dev_GetAISettingByKeyField( "PersonalShield" ) != null )
@@ -338,6 +344,21 @@ function CommonNPCOnSpawned( entity npc )
 			{
 				thread DroneGruntThink( npc, npc.ai.droneSpawnAISettings )
 			}
+
+			/*
+			if ( npc.GetMainWeapons().len() != 0)
+			{
+				array<entity> weaponsArray = npc.GetMainWeapons()
+				
+				foreach ( weapon in weaponsArray )
+				{
+					printt( "[AI Spawn Content][Grunt] Weapon: " + weapon.GetWeaponClassName() )
+				}
+
+				printt( "[AI Spawn Content][Grunt] Grenade type: " + npc.kv.grenadeWeaponName )
+			}
+			*/
+
 			break
 
 		case "npc_spectre":
@@ -347,9 +368,9 @@ function CommonNPCOnSpawned( entity npc )
 			if ( IsMultiplayer() )
 			{
 				// Only override regular spectres by default.
-				if ( npc.GetAISettingsName() == "npc_spectre" )
+				if ( npc.GetAISettingsName() == "npc_spectre" || GetConVarBool( "sv_npc_allow_custom_ai_random_weapon" ) )
 				{
-					if ( file.spectreWeapons.len() > 0 )
+					if ( file.spectreWeapons.len() > 0 && GetConVarBool( "sv_npc_give_random_primary" ) )
 						ReplaceWeapon( npc, file.spectreWeapons[ RandomInt( file.spectreWeapons.len() ) ], [] )
 				}
 				
@@ -375,8 +396,23 @@ function CommonNPCOnSpawned( entity npc )
 				}
 			}
 
-			if ( GetCurrentPlaylistVarInt( "aitdm_archer_grunts", 0 ) == 0 && SP_GetPilotAntiTitanWeapon( npc ) == null )
+			if ( GetConVarBool( "sv_npc_give_antititan" ) && GetCurrentPlaylistVarInt( "aitdm_archer_grunts", 0 ) == 0 && SP_GetPilotAntiTitanWeapon( npc ) == null )
 				TryAutoAssignAntiTitanWeapon( npc )
+			
+			/*
+			if ( npc.GetMainWeapons().len() != 0)
+			{
+				array<entity> weaponsArray = npc.GetMainWeapons()
+				
+				foreach ( weapon in weaponsArray )
+				{
+					printt( "[AI Spawn Content][Spectre] Weapon: " + weapon.GetWeaponClassName() )
+				}
+				
+				printt( "[AI Spawn Content][Spectre] Grenade type: " + npc.kv.grenadeWeaponName )
+			}
+			*/
+
 			break
 
 		case "npc_stalker":
@@ -758,10 +794,19 @@ void function TryAutoAssignAntiTitanWeapon( entity npc )
 	if ( file.nextAntiTitanWeaponAutoAssign > 0 )
 		return
 
-	int cvar_antititan_assign = GetConVarInt( "sv_npc_antititan_assign" )
+	int cvar_antititan_assign = GetConVarInt( "sv_npc_antititan_assign_rate" )
+
+	// Don't give rockets if CVAR = 0
+	if (cvar_antititan_assign < 1)
+	{
+		CodeWarning( "sv_npc_antititan_assign_rate is lower than 1, minions won't receive any AT weapons!" )
+		return
+	}
+
 	file.nextAntiTitanWeaponAutoAssign = cvar_antititan_assign //3
 	
 	string weapon = file.pilotAntiTitanWeapons.getrandom()
+
 	npc.GiveWeapon( weapon )
 	
 	if ( IsGrunt( npc ) )

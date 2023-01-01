@@ -3,12 +3,77 @@
    "Description": "Gives AI minions various anti-titan capabilities.",
    "LoadPriority": 2,
    "RequiredOnClient": false,
-   "Version": "1.0.2",
+   "Version": "1.0.3",
    "ConVars": 
    [
+      // Weapon distribution CVARs.
       {
-         "Name": "sv_npc_antititan_assign",
-         "DefaultValue": "4" // every 4th NPC will get an anti-titan weapon on spawn.
+         "Name": "sv_npc_give_random_primary",
+         "DefaultValue": "1",
+         "HelpString": "Allow NPCs spawn with random primary weapon."
+      },
+      {
+         "Name": "sv_npc_give_antititan",
+         "DefaultValue": "1",
+         "HelpString": "Allow NPCs spawn with anti-titan weapon."
+      },
+      {
+         "Name": "sv_npc_give_random_grenades",
+         "DefaultValue": "1",
+         "HelpString": "Allow NPCs spawn with random grenades."
+      },
+      {
+         "Name": "sv_npc_allow_custom_ai_random_weapon",
+         "DefaultValue": "0",
+         "HelpString": "Allow overriding weapons for NPCs with non-default AI settings."
+      },
+      {
+         "Name": "sv_npc_allow_random_grenades_no_default",
+         "DefaultValue": "0",
+         "HelpString": "Allow NPCs spawn with random grenades when they don't have any grenade set in AI settings."
+      },
+      // Weapon Lists (Overwriting lists that are set in gamemode script). Won't work if "aitdm_archer_grunts" enabled.
+      {
+         "Name": "sv_npc_grunt_weapons",
+         "DefaultValue": "",
+         "HelpString": "List of weapons that grunts will use."
+      },
+      {
+         "Name": "sv_npc_spectre_weapons",
+         "DefaultValue": "",
+         "HelpString": "List of weapons that spectres will use."
+      },
+      {
+         "Name": "sv_npc_antititan_weapons",
+         "DefaultValue": "",
+         "HelpString": "List of anti-titan weapons that NPCs will use."
+      },
+      {
+         "Name": "sv_npc_grenades",
+         "DefaultValue": "",
+         "HelpString": "List of grenades that NPCs will use."
+      },
+      // AI and spawn cvars.
+      {
+         "Name": "sv_npc_allow_switch_weapons",
+         "DefaultValue": "1",
+         "HelpString": "Allow NPCs switch weapons."
+      },
+      {
+         "Name": "sv_npc_antititan_assign_rate",
+         "DefaultValue": "4",
+         "HelpString": "Every Nth NPC will get an anti-titan weapon on spawn."
+      }
+   ],
+   "Scripts":
+   [
+      {
+         "Path": "_at_minions_cvars.gnut",
+         "RunOn": "SERVER && MP",
+         "ServerCallback": 
+         {
+				"After": "InitWeaponsListFromCVARs"
+			}
       }
    ]
 }

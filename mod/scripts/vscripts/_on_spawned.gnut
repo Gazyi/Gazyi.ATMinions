@@ -196,10 +196,10 @@ void function AssignGrenadeWeaponFromAISettings( entity npc )
 		return
 
 	string grenadeWeaponName = npc.AISetting_GetGrenadeWeapon()
-	if ( grenadeWeaponName == "" )
+	if ( grenadeWeaponName == "" && GetConVarBool( "sv_npc_allow_random_grenades_no_default" ) )
 		return
 		
-	if ( file.grenadeWeapons.len() > 0 )
+	if ( file.grenadeWeapons.len() > 0 && GetConVarBool( "sv_npc_give_random_grenades" ) )
 		grenadeWeaponName = file.grenadeWeapons[ RandomInt( file.grenadeWeapons.len() ) ]
 
 	npc.kv.grenadeWeaponName = grenadeWeaponName

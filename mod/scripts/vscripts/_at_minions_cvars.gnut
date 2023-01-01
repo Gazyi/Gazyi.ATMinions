@@ -1,0 +1,125 @@
+// CVAR functions
+global function InitWeaponsListFromCVARs
+global function UpdateWeaponsListFromCVARs
+
+struct
+{
+	string gruntWeaponsCvarCached = ""
+	string spectreWeaponsCvarCached = ""
+	string pilotAntiTitanWeaponsCvarCached = ""
+	string grenadeWeaponsCvarCached = ""
+} cache
+
+void function InitWeaponsListFromCVARs()
+{
+	#if SERVER
+	UpdateWeaponsListFromCVARs()
+
+	thread TrackWeaponListCVARs()
+	#endif
+}
+
+void function TrackWeaponListCVARs()
+{
+	while (true)
+	{
+		if ( (cache.gruntWeaponsCvarCached != GetConVarString( "sv_npc_grunt_weapons" )) || (cache.spectreWeaponsCvarCached != GetConVarString( "sv_npc_spectre_weapons" )) || (cache.pilotAntiTitanWeaponsCvarCached != GetConVarString( "sv_npc_antititan_weapons" )) || (cache.grenadeWeaponsCvarCached != GetConVarString( "sv_npc_grenades" )) )
+		{
+			UpdateWeaponsListFromCVARs()
+		}
+		WaitFrame()
+	}
+}
+
+void function UpdateWeaponsListFromCVARs()
+{
+	// Don't overwrite weapon class if "archer grunts" playlist cvar is enabled.
+	if ( GetCurrentPlaylistVarInt( "aitdm_archer_grunts", 0 ) == 0 )
+	{
+		print("=========================================================================");
+		print("Refreshing NPC weapon lists...");
+        print("=========================================================================");
+
+        string gruntWeaponsCvar = GetConVarString( "sv_npc_grunt_weapons" )
+		string spectreWeaponsCvar = GetConVarString( "sv_npc_spectre_weapons" )
+		string pilotAntiTitanWeaponsCvar = GetConVarString( "sv_npc_antititan_weapons" )
+		string grenadeWeaponsCvar = GetConVarString( "sv_npc_grenades" )
+
+		if ( cache.gruntWeaponsCvarCached != gruntWeaponsCvar )
+		{
+			if ( gruntWeaponsCvar.len() == 0 )
+			{
+				AiGameModes_SetGruntWeapons( [] )
+			}
+			else
+			{
+				array< string > NewGruntWeapons = split( gruntWeaponsCvar, "," )
+				foreach ( string weapon in NewGruntWeapons )
+				{
+					StringReplace( weapon, " ", "" )
+				}
+				AiGameModes_SetGruntWeapons( NewGruntWeapons )
+
+			}
+
+			cache.gruntWeaponsCvarCached = gruntWeaponsCvar
+		}
+
+		if ( cache.spectreWeaponsCvarCached != spectreWeaponsCvar )
+		{
+			if ( spectreWeaponsCvar.len() == 0 )
+			{
+				AiGameModes_SetSpectreWeapons( [] )
+			}
+			else
+			{
+				array< string > NewSpectreWeapons = split( spectreWeaponsCvar, "," )
+				foreach ( string weapon in NewSpectreWeapons )
+				{
+					StringReplace( weapon, " ", "" )
+				}
+				AiGameModes_SetSpectreWeapons( NewSpectreWeapons )
+			}
+
+			cache.spectreWeaponsCvarCached = spectreWeaponsCvar
+		}
+
+		if ( cache.pilotAntiTitanWeaponsCvarCached != pilotAntiTitanWeaponsCvar )
+		{
+			if ( pilotAntiTitanWeaponsCvar.len() == 0 )
+			{
+				AiGameModes_SetAntiTitanWeapons( [ "mp_weapon_rocket_launcher" ] )
+			}
+			else
+			{
+				array< string > NewPilotAntiTitanWeapons = split( pilotAntiTitanWeaponsCvar, "," )
+				foreach ( string weapon in NewPilotAntiTitanWeapons )
+				{
+					StringReplace( weapon, " ", "" )
+				}
+				AiGameModes_SetAntiTitanWeapons( NewPilotAntiTitanWeapons )
+			}
+
+			cache.pilotAntiTitanWeaponsCvarCached = pilotAntiTitanWeaponsCvar
+		}
+
+		if ( cache.grenadeWeaponsCvarCached != grenadeWeaponsCvar )
+		{
+			if ( grenadeWeaponsCvar.len() == 0 )
+			{
+				AiGameModes_SetGrenadeWeapons( [] )
+			}
+			else
+			{
+				array< string > NewGrenadeWeaponsCvar = split( grenadeWeaponsCvar, "," )
+				foreach ( string weapon in NewGrenadeWeaponsCvar )
+				{
+					StringReplace( weapon, " ", "" )
+				}
+				AiGameModes_SetGrenadeWeapons( NewGrenadeWeaponsCvar )
+			}
+
+			cache.grenadeWeaponsCvarCached = grenadeWeaponsCvar
+		}
+	}
+}
