@@ -12,6 +12,7 @@ sv_npc_allow_random_grenades_no_default (Default value: 0) - Allow NPCs spawn wi
 ```
 ##### Weapon lists 
 Those cvars overwrite gamemode script lists. They won't work if `aitdm_archer_grunts` ConVar is enabled.
+
 Example: `sv_npc_grunt_weapons mp_weapon_rspn101,mp_weapon_rspn101_og,mp_weapon_dmr,mp_weapon_r97,mp_weapon_lmg`
 ```
 sv_npc_grunt_weapons - List of weapons that grunts will use.
