@@ -6,6 +6,7 @@ struct
 {
 	string gruntWeaponsCvarCached = ""
 	string spectreWeaponsCvarCached = ""
+	string stalkerWeaponsCvarCached = ""
 	string pilotAntiTitanWeaponsCvarCached = ""
 	string grenadeWeaponsCvarCached = ""
 } cache
@@ -23,7 +24,7 @@ void function TrackWeaponListCVARs()
 {
 	while (true)
 	{
-		if ( (cache.gruntWeaponsCvarCached != GetConVarString( "sv_npc_grunt_weapons" )) || (cache.spectreWeaponsCvarCached != GetConVarString( "sv_npc_spectre_weapons" )) || (cache.pilotAntiTitanWeaponsCvarCached != GetConVarString( "sv_npc_antititan_weapons" )) || (cache.grenadeWeaponsCvarCached != GetConVarString( "sv_npc_grenades" )) )
+		if ( (cache.gruntWeaponsCvarCached != GetConVarString( "sv_npc_grunt_weapons" )) || (cache.spectreWeaponsCvarCached != GetConVarString( "sv_npc_spectre_weapons" )) || (cache.stalkerWeaponsCvarCached != GetConVarString( "sv_npc_stalker_weapons" )) || (cache.pilotAntiTitanWeaponsCvarCached != GetConVarString( "sv_npc_antititan_weapons" )) || (cache.grenadeWeaponsCvarCached != GetConVarString( "sv_npc_grenades" )) )
 		{
 			UpdateWeaponsListFromCVARs()
 		}
@@ -42,6 +43,7 @@ void function UpdateWeaponsListFromCVARs()
 
         string gruntWeaponsCvar = GetConVarString( "sv_npc_grunt_weapons" )
 		string spectreWeaponsCvar = GetConVarString( "sv_npc_spectre_weapons" )
+		string stalkerWeaponsCvar = GetConVarString( "sv_npc_stalker_weapons" )
 		string pilotAntiTitanWeaponsCvar = GetConVarString( "sv_npc_antititan_weapons" )
 		string grenadeWeaponsCvar = GetConVarString( "sv_npc_grenades" )
 
@@ -49,7 +51,7 @@ void function UpdateWeaponsListFromCVARs()
 		{
 			if ( gruntWeaponsCvar.len() == 0 )
 			{
-				AiGameModes_SetGruntWeapons( [] )
+				AiGameModes_SetNPCWeapons( "npc_soldier", [] )
 			}
 			else
 			{
@@ -58,7 +60,7 @@ void function UpdateWeaponsListFromCVARs()
 				{
 					StringReplace( weapon, " ", "" )
 				}
-				AiGameModes_SetGruntWeapons( NewGruntWeapons )
+				AiGameModes_SetNPCWeapons( "npc_soldier", NewGruntWeapons )
 
 			}
 
@@ -69,7 +71,7 @@ void function UpdateWeaponsListFromCVARs()
 		{
 			if ( spectreWeaponsCvar.len() == 0 )
 			{
-				AiGameModes_SetSpectreWeapons( [] )
+				AiGameModes_SetNPCWeapons( "npc_spectre", [] )
 			}
 			else
 			{
@@ -78,10 +80,29 @@ void function UpdateWeaponsListFromCVARs()
 				{
 					StringReplace( weapon, " ", "" )
 				}
-				AiGameModes_SetSpectreWeapons( NewSpectreWeapons )
+				AiGameModes_SetNPCWeapons( "npc_spectre", NewSpectreWeapons )
 			}
 
 			cache.spectreWeaponsCvarCached = spectreWeaponsCvar
+		}
+
+		if ( cache.stalkerWeaponsCvarCached != stalkerWeaponsCvar )
+		{
+			if ( stalkerWeaponsCvar.len() == 0 )
+			{
+				AiGameModes_SetNPCWeapons( "npc_stalker", [] )
+			}
+			else
+			{
+				array< string > NewStalkerWeapons = split( stalkerWeaponsCvar, "," )
+				foreach ( string weapon in NewStalkerWeapons )
+				{
+					StringReplace( weapon, " ", "" )
+				}
+				AiGameModes_SetNPCWeapons( "npc_stalker", NewStalkerWeapons )
+			}
+
+			cache.stalkerWeaponsCvarCached = stalkerWeaponsCvar
 		}
 
 		if ( cache.pilotAntiTitanWeaponsCvarCached != pilotAntiTitanWeaponsCvar )

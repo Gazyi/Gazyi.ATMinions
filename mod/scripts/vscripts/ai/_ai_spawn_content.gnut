@@ -4,8 +4,7 @@ global const PROTOTYPE_DEFAULT_TITAN_RODEO_SLOTS = 3  // Todo: remove and set th
 
 //------------------------------------------------------
 // Moved from _ai_gamemodes.gnut
-global function AiGameModes_SetGruntWeapons
-global function AiGameModes_SetSpectreWeapons
+global function AiGameModes_SetNPCWeapons
 global function AiGameModes_SetAntiTitanWeapons
 
 //------------------------------------------------------
@@ -16,22 +15,18 @@ global function FixupTitle
 
 struct
 {
-	array< string > gruntWeapons = []
-	array< string > spectreWeapons = []
+	table< string, array<string> > npcWeaponsTable // npcs have their default weapon in aisettings file
 	array< string > pilotAntiTitanWeapons = [ "mp_weapon_rocket_launcher" ]
 	int 			nextAntiTitanWeaponAutoAssign
 } file
 
 //------------------------------------------------------
 
-void function AiGameModes_SetGruntWeapons( array< string > weapons )
+void function AiGameModes_SetNPCWeapons( string npcClass, array<string> weapons )
 {
-	file.gruntWeapons = weapons
-}
-
-void function AiGameModes_SetSpectreWeapons( array< string > weapons )
-{
-	file.spectreWeapons = weapons
+	if ( !( npcClass in file.npcWeaponsTable ) )
+		file.npcWeaponsTable[ npcClass ] <- []
+	file.npcWeaponsTable[ npcClass ] = weapons
 }
 
 void function AiGameModes_SetAntiTitanWeapons( array< string > weapons )
@@ -312,8 +307,8 @@ function CommonNPCOnSpawned( entity npc )
 			// Only override regular grunts by default.
 			if ( IsMultiplayer() && ( npc.GetAISettingsName() == "npc_soldier" || GetConVarBool( "sv_npc_allow_custom_ai_random_weapon" ) ) )
 			{
-				if ( file.gruntWeapons.len() > 0 && GetConVarBool( "sv_npc_give_random_primary" ) )
-					ReplaceWeapon( npc, file.gruntWeapons[ RandomInt( file.gruntWeapons.len() ) ], [] )
+				if ( GetConVarBool( "sv_npc_give_random_primary" ) )
+					SetUpNPCWeapons( npc )
 			}
 
 			bool alreadyGaveASecondary = false;
@@ -344,8 +339,7 @@ function CommonNPCOnSpawned( entity npc )
 			{
 				thread DroneGruntThink( npc, npc.ai.droneSpawnAISettings )
 			}
-
-			/*
+/*
 			if ( npc.GetMainWeapons().len() != 0)
 			{
 				array<entity> weaponsArray = npc.GetMainWeapons()
@@ -357,8 +351,7 @@ function CommonNPCOnSpawned( entity npc )
 
 				printt( "[AI Spawn Content][Grunt] Grenade type: " + npc.kv.grenadeWeaponName )
 			}
-			*/
-
+*/
 			break
 
 		case "npc_spectre":
@@ -370,8 +363,8 @@ function CommonNPCOnSpawned( entity npc )
 				// Only override regular spectres by default.
 				if ( npc.GetAISettingsName() == "npc_spectre" || GetConVarBool( "sv_npc_allow_custom_ai_random_weapon" ) )
 				{
-					if ( file.spectreWeapons.len() > 0 && GetConVarBool( "sv_npc_give_random_primary" ) )
-						ReplaceWeapon( npc, file.spectreWeapons[ RandomInt( file.spectreWeapons.len() ) ], [] )
+					if ( GetConVarBool( "sv_npc_give_random_primary" ) )
+						SetUpNPCWeapons( npc )
 				}
 				
 				npc.EnableNPCFlag( NPC_CROUCH_COMBAT )
@@ -399,7 +392,7 @@ function CommonNPCOnSpawned( entity npc )
 			if ( GetConVarBool( "sv_npc_give_antititan" ) && GetCurrentPlaylistVarInt( "aitdm_archer_grunts", 0 ) == 0 && SP_GetPilotAntiTitanWeapon( npc ) == null )
 				TryAutoAssignAntiTitanWeapon( npc )
 			
-			/*
+/*
 			if ( npc.GetMainWeapons().len() != 0)
 			{
 				array<entity> weaponsArray = npc.GetMainWeapons()
@@ -411,15 +404,21 @@ function CommonNPCOnSpawned( entity npc )
 				
 				printt( "[AI Spawn Content][Spectre] Grenade type: " + npc.kv.grenadeWeaponName )
 			}
-			*/
 
 			break
-
+*/
 		case "npc_stalker":
 			InitMinimapSettings( npc )
 
 			if ( IsSingleplayer() && npc.kv.squadname != "" )
 				SetNPCSquadMode( npc.kv.squadname, SQUAD_MODE_MULTIPRONGED_ATTACK )
+
+			// Only override regular stalkers by default.
+			if ( npc.GetAISettingsName() == "npc_stalker" || GetConVarBool( "sv_npc_allow_custom_ai_random_weapon" ) )
+			{
+				if ( GetConVarBool( "sv_npc_give_random_primary" ) )
+					SetUpNPCWeapons( npc )
+			}
 
 			break
 
@@ -489,12 +488,27 @@ function CommonNPCOnSpawned( entity npc )
 	#endif
 }
 
-// entity.ReplaceActiveWeapon gave grunts archers sometimes, this is my replacement for it
-void function ReplaceWeapon( entity guy, string weapon, array<string> mods )
+void function SetUpNPCWeapons( entity guy )
 {
-	guy.TakeActiveWeapon()
-	guy.GiveWeapon( weapon, mods )
-	guy.SetActiveWeaponByName( weapon )
+	string className = guy.GetClassName()
+	
+	array<string> mainWeapons
+	if ( className in file.npcWeaponsTable )
+		mainWeapons = file.npcWeaponsTable[ className ]
+	
+	if ( mainWeapons.len() == 0 ) // no valid weapons
+		return
+
+	// take off existing main weapons, or sometimes they'll have a archer by default
+	foreach ( entity weapon in guy.GetMainWeapons() )
+		guy.TakeWeapon( weapon.GetWeaponClassName() )
+
+	if ( mainWeapons.len() > 0 )
+	{
+		string weaponName = mainWeapons[ RandomInt( mainWeapons.len() ) ]
+		guy.GiveWeapon( weaponName )
+		guy.SetActiveWeaponByName( weaponName )
+	}
 }
 
 void function FixupTitle( entity npc )
@@ -806,7 +820,6 @@ void function TryAutoAssignAntiTitanWeapon( entity npc )
 	file.nextAntiTitanWeaponAutoAssign = cvar_antititan_assign //3
 	
 	string weapon = file.pilotAntiTitanWeapons.getrandom()
-
 	npc.GiveWeapon( weapon )
 	
 	if ( IsGrunt( npc ) )

@@ -196,13 +196,14 @@ void function AssignGrenadeWeaponFromAISettings( entity npc )
 		return
 
 	string grenadeWeaponName = npc.AISetting_GetGrenadeWeapon()
-	if ( grenadeWeaponName == "" && GetConVarBool( "sv_npc_allow_random_grenades_no_default" ) )
+	if ( grenadeWeaponName == "" && !GetConVarBool( "sv_npc_allow_random_grenades_no_default" ) )
 		return
 		
 	if ( file.grenadeWeapons.len() > 0 && GetConVarBool( "sv_npc_give_random_grenades" ) )
 		grenadeWeaponName = file.grenadeWeapons[ RandomInt( file.grenadeWeapons.len() ) ]
 
 	npc.kv.grenadeWeaponName = grenadeWeaponName
+	//printt( "[AssignGrenadeWeapon] Grenade type: " + npc.kv.grenadeWeaponName )
 }
 
 void function AssignSpawnOptionsFromLeveled( entity npc, void functionref( entity, string, array<string> = 0 ) spawnSettingsFunc, string kvWeapon, string kvWeaponMods )

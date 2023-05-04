@@ -17,6 +17,7 @@ Example: `sv_npc_grunt_weapons mp_weapon_rspn101,mp_weapon_dmr,mp_weapon_r97,mp_
 ```
 sv_npc_grunt_weapons - List of weapons that grunts will use.
 sv_npc_spectre_weapons - List of weapons that spectres will use.
+sv_npc_stalker_weapons - List of weapons that stalkers will use.
 sv_npc_antititan_weapons - List of anti-titan weapons that NPCs will use.
 sv_npc_grenades - List of grenades that NPCs will use.
 ```
