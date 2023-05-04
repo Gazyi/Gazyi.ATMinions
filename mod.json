@@ -3,7 +3,7 @@
    "Description": "Gives AI minions various anti-titan capabilities.",
    "LoadPriority": 2,
    "RequiredOnClient": false,
-   "Version": "1.0.3",
+   "Version": "1.0.4",
    "ConVars": 
    [
       // Weapon distribution CVARs.
