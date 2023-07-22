@@ -339,7 +339,7 @@ function CommonNPCOnSpawned( entity npc )
 			{
 				thread DroneGruntThink( npc, npc.ai.droneSpawnAISettings )
 			}
-/*
+			#if DEV
 			if ( npc.GetMainWeapons().len() != 0)
 			{
 				array<entity> weaponsArray = npc.GetMainWeapons()
@@ -351,7 +351,7 @@ function CommonNPCOnSpawned( entity npc )
 
 				printt( "[AI Spawn Content][Grunt] Grenade type: " + npc.kv.grenadeWeaponName )
 			}
-*/
+			#endif
 			break
 
 		case "npc_spectre":
@@ -392,7 +392,7 @@ function CommonNPCOnSpawned( entity npc )
 			if ( GetConVarBool( "sv_npc_give_antititan" ) && GetCurrentPlaylistVarInt( "aitdm_archer_grunts", 0 ) == 0 && SP_GetPilotAntiTitanWeapon( npc ) == null )
 				TryAutoAssignAntiTitanWeapon( npc )
 			
-/*
+			#if DEV
 			if ( npc.GetMainWeapons().len() != 0)
 			{
 				array<entity> weaponsArray = npc.GetMainWeapons()
@@ -404,9 +404,9 @@ function CommonNPCOnSpawned( entity npc )
 				
 				printt( "[AI Spawn Content][Spectre] Grenade type: " + npc.kv.grenadeWeaponName )
 			}
-
+			#endif
 			break
-*/
+
 		case "npc_stalker":
 			InitMinimapSettings( npc )
 
